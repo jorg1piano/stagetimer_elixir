@@ -30,4 +30,9 @@ defmodule Stagetimer.Timer do
           started_from_ms: non_neg_integer(),
           status: status()
         }
+
+  @spec new(keyword()) :: t()
+  def new(attrs) do
+    struct!(__MODULE__, attrs)
+  end
 end
