@@ -17,5 +17,18 @@ defmodule Stagetimer.TimerTest do
                status: :idle
              } = Timer.new(id: "timer_1")
     end
+
+    test "accepts optional fields" do
+      assert %Timer{
+               id: "timer_1",
+               title: "Very precise timer",
+               speaker: "Jose Valim",
+               notes: "",
+               duration_ms: 0,
+               started_at: nil,
+               started_from_ms: 0,
+               status: :idle
+             } = Timer.new(id: "timer_1", title: "Very precise timer", speaker: "Jose Valim")
+    end
   end
 end
