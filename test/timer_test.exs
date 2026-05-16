@@ -136,4 +136,43 @@ defmodule Stagetimer.TimerTest do
       assert Timer.pause(idle, ~U[2026-05-16 12:00:00Z]) == idle
     end
   end
+
+  describe "back_to_start/2" do
+    test "running timer resets elapsed and rewinds started_at to now" do
+      running = %Timer{
+        id: "t1",
+        status: :running,
+        started_at: ~U[2026-05-16 12:00:00Z],
+        started_from_ms: 30_000
+      }
+
+      now = ~U[2026-05-16 12:01:00Z]
+
+      assert %Timer{
+               status: :running,
+               started_at: ^now,
+               started_from_ms: 0
+             } = Timer.back_to_start(running, now)
+    end
+
+    test "paused timer resets elapsed but stays paused" do
+      paused = %Timer{id: "t1", status: :paused, started_from_ms: 30_000}
+
+      assert %Timer{
+               status: :paused,
+               started_from_ms: 0
+             } = Timer.back_to_start(paused, ~U[2026-05-16 12:01:00Z])
+    end
+
+    test "idle timer is unchanged" do
+      idle = Timer.new(id: "t1")
+      assert Timer.back_to_start(idle, ~U[2026-05-16 12:01:00Z]) == idle
+    end
+
+    test "elapsed is 0 immediately after, regardless of prior state" do
+      now = ~U[2026-05-16 12:01:00Z]
+      running = Timer.start(Timer.new(id: "t1"), ~U[2026-05-16 12:00:00Z])
+      assert Timer.elapsed_ms(Timer.back_to_start(running, now), now) == 0
+    end
+  end
 end

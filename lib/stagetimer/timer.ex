@@ -62,4 +62,14 @@ defmodule Stagetimer.Timer do
   end
 
   def pause(%__MODULE__{} = t, _now), do: t
+
+  @spec back_to_start(t(), DateTime.t()) :: t()
+  def back_to_start(%__MODULE__{status: :running} = t, now) do
+    %{t | started_at: now, started_from_ms: 0}
+  end
+
+  def back_to_start(%__MODULE__{} = t, _now) do
+    # :paused or :idle
+    %{t | started_from_ms: 0}
+  end
 end
